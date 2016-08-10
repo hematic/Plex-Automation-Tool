@@ -39,9 +39,9 @@ $PlexPySavepath = "$ENV:TEMP\PlexPy.zip"
 $Global:PlexPyInstallPath = "C:\Users\$ENV:username\AppData\Roaming\PlexPy"
 #endregion
 #region PlexEmail Variables
-$PlexEmailDownloadLink = "https://github.com/drzoidberg33/plexpy/zipball/master"
-$PlexEmailSavepath = "$ENV:TEMP\PlexPy.zip"
-$Global:PlexEmailInstallPath = "C:\Users\$ENV:username\AppData\Roaming\CouchPotato\"
+$PlexEmailDownloadLink = "https://github.com/jakewaldron/plexemail/archive/master.zip9"
+$PlexEmailSavepath = "$ENV:TEMP\PlexEmail.zip"
+$Global:PlexEmailInstallPath = "C:\Users\$ENV:username\AppData\Roaming\PlexEmail"
 #endregion
 #region PlexRequests Variables
 $PlexRequestsDownloadLink = "https://github.com/tidusjar/PlexRequests.Net/releases/download/v1.8.4/PlexRequests.1.zip"
@@ -270,6 +270,23 @@ function Verify-PlexPyInstall{
 	Else
 	{
 		Write-Log "PlexPy Failed to Install"
+		Return $false
+	}
+}
+
+function Verify-PlexEmailInstall{
+	
+	If (Test-Path -Path $Global:PlexEmailInstallPath)
+	{
+		Rename-Item -Path "$Global:PlexEmailInstallPath\PlexEmail-Master" -NewName "Master" -Force
+		$Global:PlexEmailInstallPath = "C:\Users\$ENV:username\AppData\Roaming\PlexPy\Master\Plexpy.py"
+		write-log "PlexEmail is installed!"
+		Return $true
+	}
+	
+	Else
+	{
+		Write-Log "PlexEmail Failed to Install"
 		Return $false
 	}
 }

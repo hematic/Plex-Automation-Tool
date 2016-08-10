@@ -1101,6 +1101,33 @@ $button1_Click={
 		
 	}
 	
+	If ($PlexEmailCheckBox.Checked -eq $true){
+		
+		$PlexEmailDL = Download-File -DownloadLink $PlexEmailDownloadLink `
+									 -Savepath $PlexEmailSavepath `
+									 -Software PlexEmail
+		
+		If ($PlexEmailDL -ne $true)
+		{
+			Return;
+		}
+		
+		Else
+		{
+			New-Item -ItemType dir -Path $PlexEmailInstallPath -Force
+			&$Global:7ZipInstallPath x $PlexEmailSavepath "-o$PlexEmailInstallPath" -y
+			
+			$PlexEmailInstall = Verify-PlexEmailInstall
+			
+			If ($PlexEmailInstall -eq $False)
+			{
+				Return;
+			}
+			
+		}
+		
+	}
+	
 	If ($PlexRequestsCheckBox.Checked -eq $true){
 		
 		$PlexRequestsDL = Download-File -DownloadLink $PlexRequestsDownloadLink `
