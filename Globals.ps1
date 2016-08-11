@@ -30,7 +30,7 @@ $Global:DelugeInstallPath = "C:\Program Files (x86)\Deluge\DelugeD.exe"
 #endregion
 #region Jackett Variables
 $JackettDownloadLink = "https://github.com/Jackett/Jackett/releases/download/v0.7.303/Jackett.Installer.Windows.exe"
-$JackettSavepath = "$ENV:TEMP\Jackett.exe"
+$JackettSavepath = "C:\ProgramData\Jackett"
 $Global:JackettInstallPath = "C:\Program Files (x86)\Deluge"
 #endregion
 #region PlexPy Variables
