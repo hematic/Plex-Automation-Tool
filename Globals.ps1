@@ -39,7 +39,7 @@ $PlexPySavepath = "$ENV:TEMP\PlexPy.zip"
 $Global:PlexPyInstallPath = "C:\Users\$ENV:username\AppData\Roaming\PlexPy"
 #endregion
 #region PlexEmail Variables
-$PlexEmailDownloadLink = "https://github.com/jakewaldron/plexemail/archive/master.zip9"
+$PlexEmailDownloadLink = "https://github.com/jakewaldron/plexemail/archive/master.zip"
 $PlexEmailSavepath = "$ENV:TEMP\PlexEmail.zip"
 $Global:PlexEmailInstallPath = "C:\Users\$ENV:username\AppData\Roaming\PlexEmail"
 #endregion
@@ -83,6 +83,64 @@ Function Write-Log{
 	add-content -path $LogFilePath -value ($Message)
 }
 
+Function Write-RichText{
+	<#
+	.SYNOPSIS
+		A function to output text to a Rich Text Box.
+	
+	.DESCRIPTION
+		This function appends text to a Rich Text Box and colors it based 
+        upon the type of message being displayed.
+
+    .PARAM Logtype
+        Used to determine if the text is a success or error message or purely
+        informational.
+
+    .PARAM LogMSG
+        The message to be added to the RichTextBox.
+	
+	.EXAMPLE
+		Write-Richtext -LogType Error -LogMsg "This is an Error."
+		Write-Richtext -LogType Success -LogMsg "This is a Success."
+		Write-Richtext -LogType Informational -LogMsg "This is Informational."
+	
+	.NOTES
+		Added Time stamps cause why not.
+#>
+	
+	Param
+	(
+		[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+		[String]$LogType,
+		[Parameter(Mandatory = $true, Position = 1, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+		[String]$LogMsg
+	)
+	
+	switch ($logtype)
+	{
+		Error {
+			$richtextbox1.SelectionColor = 'Red'
+			$richtextbox1.AppendText("`n $(Get-date -Format "hh:mm:ss") - $logmsg")
+			Write-Log -Message $logmsg
+			
+		}
+		Success {
+			$richtextbox1.SelectionColor = 'Green'
+			$richtextbox1.AppendText("`n $(Get-date -Format "hh:mm:ss") - $logmsg")
+			Write-Log -Message $logmsg
+			
+		}
+		Informational {
+			$richtextbox1.SelectionColor = 'Blue'
+			$richtextbox1.AppendText("`n $(Get-date -Format "hh:mm:ss") - $logmsg")
+			Write-Log -Message $logmsg
+			
+		}
+		
+	}
+	
+}
+
 function Download-File{
 	
 	param
@@ -120,8 +178,12 @@ function Install-Software{
 		[parameter(Mandatory = $false)]
 		[String]$Arguments,
 		[parameter(Mandatory = $false)]
-		[System.Management.Automation.PSCredential]$Credential
+		[System.Management.Automation.PSCredential]$Credential,
+		[parameter(Mandatory = $True)]
+		[String]$Software
 	)
+	
+	Write-RichText -LogType Informational -LogMsg "Beginning install of $Software"
 	
 	switch ($Filepath)
 	{
@@ -151,20 +213,20 @@ function Verify-SonarrInstall{
 		$SonarrService = Get-Service -Name NZBDrone
 		If (!$SonarrService)
 		{
-			write-log "Sonarr service is not installed."
+			Write-RichText -LogType error -logmsg "Sonarr service is not installed."
 			Return $false
 		}
 		
 		Else
 		{
-			write-log "Sonarr is installed!"
+			Write-RichText -LogType Success -logmsg "Sonarr is installed!"
 			Return $true
 		}
 	}
 	
 	Else
 	{
-		write-log "Sonarr did not install correctly."
+		Write-RichText -LogType error -logmsg "Sonarr did not install correctly."
 		return $false
 	}
 	
@@ -174,13 +236,13 @@ function Verify-CPInstall{
 	
 	If (Test-Path -Path $Global:CPInstallPath)
 	{
-		write-log "CouchPotato is installed!"
+		Write-RichText -LogType success -logmsg "CouchPotato is installed!"
 		Return $true
 	}
 	
 	Else
 	{
-		write-log "CouchPotato did not install correctly."
+		Write-RichText -LogType error -logmsg "CouchPotato did not install correctly."
 		return $false
 	}
 	
@@ -190,13 +252,13 @@ function Verify-DelugeInstall{
 	
 	If (Test-Path -Path $Global:DelugeInstallPath)
 	{
-		write-log "Deluge is installed!"
+		Write-RichText -LogType success -logmsg "Deluge is installed!"
 		Return $true
 	}
 	
 	Else
 	{
-		write-log "Deluge did not install correctly."
+		Write-RichText -LogType error -logmsg "Deluge did not install correctly."
 		Return $false
 	}
 	
@@ -209,20 +271,20 @@ function Verify-JackettInstall{
 		$JackettService = Get-Service -Name Jackett
 		If (!$JackettService)
 		{
-			write-log "Jackett service is not installed."
+			Write-RichText -LogType error -logmsg "Jackett service is not installed."
 			Return $false
 		}
 		
 		Else
 		{
-			write-log "Jackett is installed!"
+			Write-RichText -LogType Success -logmsg "Jackett is installed!"
 			Return $true
 		}
 	}
 	
 	Else
 	{
-		write-log "Jackett did not install correctly."
+		Write-RichText -LogType error -logmsg "Jackett did not install correctly."
 		return $false
 	}
 	
@@ -232,13 +294,13 @@ function Verify-7ZipInstall{
 	
 	If (Test-Path -Path "$Global:7ZipInstallPath"){
 		
-		write-log "7Zip is installed!"
+		Write-RichText -LogType success -logmsg "7Zip is installed!"
 		Return $true
 	}
 	
 	Else
 	{
-		Write-Log "7Zip Failed to Install"
+		Write-RichText -LogType error -logmsg "7Zip Failed to Install"
 		Return $false
 	}
 }
@@ -246,13 +308,13 @@ function Verify-7ZipInstall{
 function Verify-PythonInstall{
 	
 	If (Test-Path -Path $Global:Python27InstallPath){
-		Write-Log "Python 2.7 installed successfully!"
+		Write-RichText -LogType success -logmsg "Python 2.7 installed successfully!"
 		Return $true
 	}
 	
 	Else
 	{
-		Write-Log "Python 2.7 failed to install."
+		Write-RichText -LogType error -logmsg "Python 2.7 failed to install."
 		Return $false
 	}
 }
@@ -263,13 +325,13 @@ function Verify-PlexPyInstall{
 	{
 		Rename-Item -Path "$Global:PlexPyInstallPath\drzoidberg33-plexpy-2150961" -NewName "Master" -Force
 		$Global:PlexPyInstallPath = "C:\Users\$ENV:username\AppData\Roaming\PlexPy\Master\Plexpy.py"
-		write-log "PlexPy is installed!"
+		Write-RichText -LogType success -logmsg "PlexPy is installed!"
 		Return $true
 	}
 	
 	Else
 	{
-		Write-Log "PlexPy Failed to Install"
+		Write-RichText -LogType error -logmsg "PlexPy Failed to Install"
 		Return $false
 	}
 }
@@ -280,13 +342,13 @@ function Verify-PlexEmailInstall{
 	{
 		Rename-Item -Path "$Global:PlexEmailInstallPath\PlexEmail-Master" -NewName "Master" -Force
 		$Global:PlexEmailInstallPath = "C:\Users\$ENV:username\AppData\Roaming\PlexPy\Master\Plexpy.py"
-		write-log "PlexEmail is installed!"
+		Write-RichText -LogType success -logmsg "PlexEmail is installed!"
 		Return $true
 	}
 	
 	Else
 	{
-		Write-Log "PlexEmail Failed to Install"
+		Write-RichText -LogType error -logmsg "PlexEmail Failed to Install"
 		Return $false
 	}
 }
@@ -297,13 +359,13 @@ function Verify-PlexRequestsInstall{
 	{
 		Rename-Item -Path "$Global:PlexRequestsInstallPath\release" -NewName "Master" -Force
 		$Global:PlexRequestsInstallPath = "C:\Users\$ENV:username\AppData\Roaming\PlexPy\Master\Plexrequests.exe"
-		write-log "PlexRequests is installed!"
+		Write-RichText -LogType success -logmsg "PlexRequests is installed!"
 		Return $true
 	}
 	
 	Else
 	{
-		Write-Log "PlexRequests Failed to Install"
+		Write-RichText -LogType error -logmsg "PlexRequests Failed to Install"
 		Return $false
 	}
 }
@@ -314,13 +376,13 @@ function Verify-HTPCManagerInstall{
 	{
 		Rename-Item -Path "$Global:HTPCManagerInstallPath\HTPC-Manager-master2" -NewName "Master" -Force
 		$Global:HTPCManagerInstallPath = "C:\Users\$ENV:username\AppData\Roaming\HTPCManager\Master\HTPC.py"
-		write-log "HTPCManager is installed!"
+		Write-RichText -LogType success -logmsg "HTPCManager is installed!"
 		Return $true
 	}
 	
 	Else
 	{
-		Write-Log "HTPCManager Failed to Install"
+		Write-RichText -LogType error -logmsgWrite-Log "HTPCManager Failed to Install"
 		Return $false
 	}
 	
