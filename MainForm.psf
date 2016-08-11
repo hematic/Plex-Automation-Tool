@@ -1019,7 +1019,7 @@ $button1_Click={
 		{
 			Install-Software -Filepath $CouchPotatoSavepath `
 							 -Arguments "/Silent" `
-							 -Software Sonarr
+							 -Software CouchPotato
 			
 			$CPInstall = Verify-CPInstall
 			
@@ -1047,7 +1047,8 @@ $button1_Click={
 		Else
 		{
 			Install-Software -Filepath $DelugeSavepath `
-							 -Arguments "/S"
+							 -Arguments "/S" `
+							 -Software Deluge
 			
 			$DelugeInstall = Verify-DelugeInstall
 			
@@ -1148,7 +1149,7 @@ $button1_Click={
 		
 		$PlexRequestsDL = Download-File -DownloadLink $PlexRequestsDownloadLink `
 										-Savepath $PlexRequestsSavepath `
-										-Software PlexPy
+										-Software PlexRequests
 		
 		
 		If ($PlexRequestsDL -ne $true)
@@ -1201,6 +1202,9 @@ $button1_Click={
 		}
 		
 	}
+	
+	Write-RichText -LogType Success -LogMsg "All Software Successfully Installed!!"
+	Write-RichText -LogType Informational -LogMsg "Beginning Configuration Stage"
 	
 	
 }
