@@ -6,12 +6,13 @@ $LogfilePath = "$ENV:TEMP\ToolLog.txt"
 #region 7Zip Variables
 $7ZipDownloadLink = "http://www.7-zip.org/a/7z1602-x64.exe"
 $7ZipSavePath = "$ENV:TEMP\7Zip.exe"
-$Global:7ZipInstallPath = "C:\Program Files\7-Zip\7Z.exe"
+$Global:7ZipInstallPath = "C:\Program Files\7-Zip\"
+$Global:7ZipExe = "$($Global:7ZipInstallPath)7Z.exe"
 #endregion
 #region Python 2.7 Variables
 $Python27DownloadLink = "https://www.python.org/ftp/python/2.7/python-2.7.amd64.msi"
 $Python27SavePath = "$ENV:TEMP\Python27.msi"
-$Global:Python27InstallPath = "C:\Python27\Python.exe"
+$Global:Python27InstallPath = "C:\Python27\"
 #endregion
 #region Sonarr Variables
 $SonarrDownloadLink = "https://download.sonarr.tv/v2/master/latest/NzbDrone.master.exe"
@@ -21,7 +22,7 @@ $Global:SonarrInstallpath = "$ENV:ProgramData\NzbDrone"
 #region CouchPotato Variables
 $CouchPotatoDownloadLink = "https://couchpota.to/updates/latest/installer/"
 $CouchPotatoSavepath = "$ENV:TEMP\CouchPotato.exe"
-$Global:CPInstallPath = "C:\Users\$ENV:username\AppData\Roaming\CouchPotato\application\CouchPotato.exe"
+$Global:CPInstallPath = "C:\Users\$ENV:username\AppData\Roaming\CouchPotato\application\"
 #endregion
 #region Deluge Variables
 $DelugeDownloadLink = "http://download.deluge-torrent.org/windows/deluge-1.3.13-win32-py2.7-0.exe"
@@ -30,8 +31,8 @@ $Global:DelugeInstallPath = "C:\Program Files (x86)\Deluge\DelugeD.exe"
 #endregion
 #region Jackett Variables
 $JackettDownloadLink = "https://github.com/Jackett/Jackett/releases/download/v0.7.303/Jackett.Installer.Windows.exe"
-$JackettSavepath = "C:\ProgramData\Jackett"
-$Global:JackettInstallPath = "C:\Program Files (x86)\Deluge"
+$JackettSavepath = "$ENV:TEMP\Jackett"
+$Global:JackettInstallPath = "$ENV:Programdata\Jackett"
 #endregion
 #region PlexPy Variables
 $PlexPyDownloadLink = "https://github.com/drzoidberg33/plexpy/zipball/master"
@@ -208,7 +209,7 @@ function Install-Software{
 
 function Verify-SonarrInstall{
 	
-	If (Test-Path -Path $Global:SonarrInstallpath)
+	If (Test-Path -Path $Global:SonarrInstallpath\NZBDrone.exe)
 	{
 		$SonarrService = Get-Service -Name NZBDrone
 		If (!$SonarrService)
@@ -234,7 +235,7 @@ function Verify-SonarrInstall{
 
 function Verify-CPInstall{
 	
-	If (Test-Path -Path $Global:CPInstallPath)
+	If (Test-Path -Path $Global:CPInstallPath\CouchPotato.exe)
 	{
 		Write-RichText -LogType success -logmsg "CouchPotato is installed!"
 		Return $true
@@ -292,7 +293,7 @@ function Verify-JackettInstall{
 
 function Verify-7ZipInstall{
 	
-	If (Test-Path -Path "$Global:7ZipInstallPath"){
+	If (Test-Path -Path "$Global:7ZipInstallPath\7Z.exe"){
 		
 		Write-RichText -LogType success -logmsg "7Zip is installed!"
 		Return $true
@@ -307,7 +308,7 @@ function Verify-7ZipInstall{
 
 function Verify-PythonInstall{
 	
-	If (Test-Path -Path $Global:Python27InstallPath){
+	If (Test-Path -Path $Global:Python27InstallPath\Python.exe){
 		Write-RichText -LogType success -logmsg "Python 2.7 installed successfully!"
 		Return $true
 	}
